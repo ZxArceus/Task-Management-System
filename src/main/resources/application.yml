@@ -1,0 +1,27 @@
+
+
+spring:
+  data:
+    mongodb:
+      database: taskdb
+      auto-index-creation: true
+      host: localhost
+      port: 27017
+
+  redis:
+    host: localhost
+    port: 6379
+
+server:
+  port: 8080
+security:
+  jwt:
+    secret: mySecretKey123456789012345678901234567890123456789012345678901234567890
+    expiration: 86400000
+
+
+#security:
+#  jwt:
+#    secret: mySecretKey123456789012345678901234567890123456789012345678901234567890
+#    expiration: 86400000
+

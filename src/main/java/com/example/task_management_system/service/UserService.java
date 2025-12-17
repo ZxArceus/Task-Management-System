@@ -17,7 +17,7 @@ public class UserService {
     }
     private Optional<User> getUserById(ObjectId userId){
         try{
-            return  userRepository.findByUserId(userId);
+            return  userRepository.findById(userId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

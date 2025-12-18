@@ -17,22 +17,22 @@ import java.util.Optional;
 public interface TaskRepository extends MongoRepository<Task, ObjectId> {
     Optional<Task> findByUserId(ObjectId userId);
     List<Task>findAllByUserId(ObjectId userId, Sort sort);
-    List<Task>findByUserIdAndStatus(ObjectId userId,  TaskStatus status);
+    Optional<Task>findByUserIdAndStatus(ObjectId userId,  TaskStatus status);
     Optional<List<Task>> findByUserIdAndPriority (ObjectId userId, TaskPriority priority);
 
     List<Task> findByUserIdAndDueDateBeforeAndStatusNot(
-
+            ObjectId userId,
             LocalDateTime date,
             TaskStatus status
     );
 
 
-    Long countByUserIdAndStatus(String userId,TaskStatus status);
+    Long countByUserIdAndStatus(ObjectId userId,TaskStatus status);
 
 
     Optional<Task> findByUserIdOrderByPriorityDescCreatedAtDesc(ObjectId userId);
-    boolean existsByIdAndUserId(ObjectId id,ObjectId userId);
-    Optional<Task> findByIdAndUserId(ObjectId id,ObjectId userId);
+    boolean existsByIdAndUserId(ObjectId taskId,ObjectId userId);
+    Optional<Task> findByIdAndUserId(ObjectId taskId,ObjectId userId);
     List<Task> findByUserIdAndTags(ObjectId userId, String tag);
 
 

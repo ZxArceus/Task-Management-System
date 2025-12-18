@@ -1,6 +1,7 @@
 package com.example.task_management_system.dto;
 
 import com.example.task_management_system.enums.TaskPriority;
+import com.example.task_management_system.enums.TaskStatus;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,9 +18,9 @@ public class TaskUpdateRequest {
     @Size(max = 500)
     String description;
     TaskPriority priority;
+    TaskStatus status;
 
-
-    LocalDateTime duedate;
+    LocalDateTime dueDate;
 
     List<String> tags;
 

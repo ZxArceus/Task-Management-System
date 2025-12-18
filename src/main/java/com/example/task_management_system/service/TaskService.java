@@ -2,6 +2,7 @@ package com.example.task_management_system.service;
 
 import com.example.task_management_system.dto.TaskCreateRequest;
 import com.example.task_management_system.dto.TaskResponse;
+import com.example.task_management_system.dto.TaskUpdateRequest;
 import com.example.task_management_system.enums.TaskStatus;
 import com.example.task_management_system.exception.AuthorizationException;
 import com.example.task_management_system.exception.ResourceNotFoundException;
@@ -27,7 +28,7 @@ public class TaskService {
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setPriority(request.getPriority());
-        task.setId(userId);
+        task.setUserId(userId);
         task.setStatus(TaskStatus.PENDING);
         LocalDateTime dateTime = LocalDateTime.now();
         task.setCreatedAt(dateTime);
@@ -37,7 +38,7 @@ public class TaskService {
     }
 
     public TaskResponse getTaskById(ObjectId taskId, ObjectId userId) {
-        if (!taskRepository.existsById(taskId)) {
+        if (!taskRepository.existsByIdAndUserId(taskId,userId)) {
             throw new ResourceAccessException("resource not found");
         }
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException("Task not found with Id"));
@@ -49,8 +50,34 @@ public class TaskService {
 
         return mapToResponse(task);
     }
+    public  TaskResponse updateTask(ObjectId taskId, TaskUpdateRequest request,ObjectId userId){
+        Task tasks =
+                taskRepository.findByIdAndUserId(taskId,userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+        if(request.getTitle()!=null ){
+            tasks.setTitle(request.getTitle());
+        }
+        if(request.getDescription()!=null){
+            tasks.setDescription(request.getDescription());
+        }
+        if(request.getPriority()!=null){
+            tasks.setPriority(request.getPriority());
+        }
+        if(request.getDueDate()!=null){
+            tasks.setDueDate(request.getDueDate());
+        }
+        if(request.getStatus()!=null){
+            tasks.setStatus(request.getStatus());
+            if(request.getStatus()==TaskStatus.COMPLETED){
+                tasks.setCompletedAt(LocalDateTime.now());
+            }
+        }
+        tasks.setUpdatedAt(LocalDateTime.now());
+        Task updatedtask=taskRepository.save(tasks);
+        return  mapToResponse(updatedtask);
 
-    public List<TaskResponse> getAlltask(ObjectId userId) {
+    }
+    public List<TaskResponse> getAllTask(ObjectId userId) {
 
 
         Sort sort = Sort.by(Sort.Direction.DESC,"priority")
@@ -65,30 +92,27 @@ public class TaskService {
 
     }
     public List<TaskResponse> getTaskByStatus(ObjectId userId, TaskStatus taskStatus) {
-        if(taskRepository.findByUserIdAndStatus(userId,taskStatus)==null){
-            throw new ResourceNotFoundException("no such Tasks with this priority");
-        }
-        List<Task> tasks = taskRepository.findByUserIdAndStatus(userId, taskStatus);
+
+        Optional<Task> tasks = Optional.ofNullable(
+                taskRepository.findByUserIdAndStatus(userId, taskStatus)
+                        .orElseThrow(() -> new ResourceNotFoundException("Task not found")));
         return  tasks.stream()
                 .map(this::mapToResponse)
                 .toList();
     }
     public void deleteTask(ObjectId taskId,ObjectId userId){
-        Task task = taskRepository
-                .findByIdAndUserId(taskId,userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Task not found or access denied")
-                );
+       if(taskRepository.findByIdAndUserId(taskId, userId).isEmpty()){
+           throw new ResourceNotFoundException("Task not found or access denied");
+       }
 
-        // Delete the task
         taskRepository.deleteById(taskId);
     }
-    public List<TaskResponse> getOverdueTasks() {
+    public List<TaskResponse> getOverdueTasks(ObjectId userId) {
 
         LocalDateTime now = LocalDateTime.now();
 
         List<Task> tasks = taskRepository
-                .findByUserIdAndDueDateBeforeAndStatusNot(now, TaskStatus.COMPLETED);
+                .findByUserIdAndDueDateBeforeAndStatusNot(userId,now, TaskStatus.COMPLETED);
 
         return tasks.stream()
                 .map(this::mapToResponse)

@@ -38,7 +38,7 @@ public class TaskService {
     }
 
     public TaskResponse getTaskById(ObjectId taskId, ObjectId userId) {
-        if (!taskRepository.existsByIdAndUserId(taskId,userId)) {
+        if (!taskRepository.existsById(taskId)) {
             throw new ResourceAccessException("resource not found");
         }
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException("Task not found with Id"));
@@ -93,9 +93,11 @@ public class TaskService {
     }
     public List<TaskResponse> getTaskByStatus(ObjectId userId, TaskStatus taskStatus) {
 
-        Optional<Task> tasks = Optional.ofNullable(
-                taskRepository.findByUserIdAndStatus(userId, taskStatus)
-                        .orElseThrow(() -> new ResourceNotFoundException("Task not found")));
+
+        if(taskRepository.findByUserIdAndStatus(userId, taskStatus).isEmpty()){
+            throw  new ResourceNotFoundException("no such task found ");
+        }
+        List<Task> tasks=taskRepository.findByUserIdAndStatus(userId, taskStatus);
         return  tasks.stream()
                 .map(this::mapToResponse)
                 .toList();

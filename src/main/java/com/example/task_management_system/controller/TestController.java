@@ -3,6 +3,7 @@ package com.example.task_management_system.controller;
 import com.example.task_management_system.model.User;
 import com.example.task_management_system.repository.UserRepository;
 import com.example.task_management_system.service.TestService;
+import com.example.task_management_system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 public class TestController {
    @Autowired
     private TestService testService;
+   @Autowired private UserService userService;
     @Autowired
     private UserRepository userRepo;
    @GetMapping("/healthcheck")
@@ -24,7 +26,8 @@ public class TestController {
    }
    @PostMapping
     public  User createEntry( @RequestBody User user){
-       return  userRepo.save(user);
+
+       return userService.saveUser(user);
    }
     @GetMapping
     public  ResponseEntity<?> getEntry(){

@@ -11,18 +11,18 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-    private  User saveUser(User user){
+    public User saveUser(User user){
         return userRepository.save(user);
 
     }
-    private Optional<User> getUserById(ObjectId userId){
+    public Optional<User> getUserById(ObjectId userId){
         try{
             return  userRepository.findById(userId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    private Optional<User> getUserByName(String username){
+    public Optional<User> getUserByName(String username){
         try{
             return  userRepository.findByUsername(username);
         } catch (Exception e) {

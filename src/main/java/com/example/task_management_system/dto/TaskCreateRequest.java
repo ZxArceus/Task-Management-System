@@ -23,7 +23,7 @@ public class TaskCreateRequest {
     @NotNull
     TaskPriority priority;
 
-    LocalDateTime duedate;
+    LocalDateTime dueDate;
     List<String> tags;
 
 

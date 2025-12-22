@@ -17,11 +17,8 @@ server:
 security:
   jwt:
     secret: mySecretKey123456789012345678901234567890123456789012345678901234567890
-    expiration: 86400000
+    access-token-expiry: 86400000
+    refresh-token-expiry: 604800000
 
 
-#security:
-#  jwt:
-#    secret: mySecretKey123456789012345678901234567890123456789012345678901234567890
-#    expiration: 86400000
 
